@@ -1,8 +1,9 @@
+// Learn.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-// ... existing imports ...
 import { Button, Container, Typography, Paper, TextField } from '@mui/material';
 import { styled } from '@mui/system';
+import { motion } from 'framer-motion';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -39,11 +40,11 @@ function Learn() {
   };
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" component={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <Typography variant="h2" gutterBottom>
         {lesson.topic}
       </Typography>
-      
+
       <StyledPaper elevation={3}>
         <Typography variant="body1">{lesson.content}</Typography>
       </StyledPaper>
