@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from flask_restful import Api
 from config import Config
 from celery import Celery
+from flask_cors import CORS
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -13,7 +14,7 @@ celery = Celery(__name__)
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object('config.Config')
-
+    CORS(app)
     if 'CELERY_BROKER_URL' not in app.config:
         app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'  # Default value
     

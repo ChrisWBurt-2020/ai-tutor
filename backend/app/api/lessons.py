@@ -12,4 +12,8 @@ def get_lesson(subject, topic):
         lesson = Lesson(subject=subject, topic=topic, content=content)
         db.session.add(lesson)
         db.session.commit()
-    return jsonify({'subject': lesson.subject, 'topic': lesson.topic, 'content': lesson.content}), 200
+    return jsonify({
+        'subject': lesson.subject,
+        'topic': lesson.topic,
+        'content': lesson.content
+    }), 200

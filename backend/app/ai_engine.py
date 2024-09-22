@@ -4,15 +4,23 @@ from config import Config
 openai.api_key = Config.OPENAI_API_KEY
 
 def generate_lesson_content(subject, topic):
-    prompt = f"Provide a detailed lesson on {topic} in {subject}. Include examples and explanations suitable for a beginner."
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=800,
-        temperature=0.7
-    )
-    lesson_content = response.choices[0].text.strip()
-    return lesson_content
+       prompt = f"Create a comprehensive lesson on {topic} for the subject {subject}."
+
+       try:
+           response = openai.Completion.create(
+               engine="text-davinci-003",
+               prompt=prompt,
+               max_tokens=1500,
+               n=1,
+               stop=None,
+               temperature=0.7,
+           )
+           content = response.choices[0].text.strip()
+           return content
+       except Exception as e:
+           # Handle exceptions such as API errors
+           print(f"Error generating lesson content: {e}")
+           return "Sorry, we couldn't generate the lesson content at this time."
 
 def evaluate_code(code, subject, topic):
     prompt = f"As an expert in {subject}, evaluate the following code for the topic '{topic}'. Provide feedback and suggestions for improvement.\n\nCode:\n{code}"
