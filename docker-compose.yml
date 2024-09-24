@@ -1,0 +1,83 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: ai_tutor_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend:/app
+      - ./backend/migrations:/app/migrations
+    networks:
+      - ai_tutor_network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ai_tutor_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - ai_tutor_network
+
+  db:
+    image: postgres:14-alpine
+    container_name: ai_tutor_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - ai_tutor_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ai_tutor_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - ai_tutor_network
+
+  celery:
+    build:
+      context: ./backend
+    container_name: ai_tutor_celery
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: celery -A app.celery_worker.celery worker --loglevel=info
+    depends_on:
+      - backend
+      - redis
+      - db
+    volumes:
+      - ./backend:/app
+      - ./backend/migrations:/app/migrations
+    networks:
+      - ai_tutor_network
+
+volumes:
+  db_data:
+
+networks:
+  ai_tutor_network:
+    driver: bridge
